@@ -33,4 +33,5 @@ def start_transcoding_job(file_name, file, profiles):
   job = app_tables.jobs.get(user=user, file_name=file_name)
   #set profiles of job and start it
   job.update(profiles=profiles)
-  
+
+@anvil.server.http_endpoint('/transcode')
