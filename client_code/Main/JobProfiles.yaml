@@ -1,0 +1,233 @@
+container: {type: ColumnPanel}
+components:
+- name: column_panel_1
+  properties: {col_widths: '{"SUARYY":10,"SLOLSV":5,"WZCVQC":5,"UGZKGD":5,"EZQDMG":7,"PGVDNC":10,"FPWXHB":28,"SYUTLB":5}'}
+  type: ColumnPanel
+  layout_properties: {grid_position: 'JGJUHE,LRLFQP'}
+  components:
+  - name: label_1
+    properties: {text: Name, bold: true}
+    type: Label
+    layout_properties: {grid_position: 'CNEAZV,SUARYY AXMCGD,MKILJL'}
+  - name: p1_name
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,SUARYY XBPYOP,ZOBJFV'}
+  - name: p2_name
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,SUARYY JGXHMU,FTSJSG'}
+  - name: p3_name
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,SUARYY CDXXCZ,JPVBNX'}
+  - name: p4_name
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,SUARYY AZEMMU,PDYWJP'}
+  - name: p5_name
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,SUARYY XQYRXA,EOIZFG'}
+  - name: label_2
+    properties: {text: Codec, bold: true}
+    type: Label
+    layout_properties: {grid_position: 'CNEAZV,SLOLSV VVGWRF,SAJUWA'}
+  - name: p1_codec
+    properties:
+      items: [AV1, H264]
+      include_placeholder: false
+      placeholder: ''
+    type: DropDown
+    layout_properties: {grid_position: 'CNEAZV,SLOLSV RJQHAV,CLEIDB'}
+    data_bindings: []
+  - name: p2_codec
+    properties:
+      items: [AV1, H264]
+      include_placeholder: false
+      placeholder: ''
+    type: DropDown
+    layout_properties: {grid_position: 'CNEAZV,SLOLSV TCBQWN,ONXLUE'}
+    data_bindings: []
+  - name: p3_codec
+    properties:
+      include_placeholder: false
+      placeholder: ''
+      items: [AV1, H264]
+    type: DropDown
+    layout_properties: {grid_position: 'CNEAZV,SLOLSV TXGOWS,CKZIFB'}
+    data_bindings: []
+  - name: p4_codec
+    properties:
+      items: [AV1, H264]
+      include_placeholder: false
+      placeholder: AV1
+    type: DropDown
+    layout_properties: {grid_position: 'CNEAZV,SLOLSV ICZDUJ,CAMUHT'}
+    data_bindings: []
+  - name: p5_codec
+    properties:
+      include_placeholder: false
+      placeholder: ''
+      items: [AV1, H264]
+    type: DropDown
+    layout_properties: {grid_position: 'CNEAZV,SLOLSV MFJUHK,OOEYIR'}
+    data_bindings: []
+  - name: label_3
+    properties: {text: Width, bold: true}
+    type: Label
+    layout_properties: {grid_position: 'CNEAZV,WZCVQC EFJTRW,DFHKOP'}
+  - name: p1_width
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,WZCVQC CHKONR,EPCBPW'}
+  - name: p2_witdth
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,WZCVQC JPTUVS,KBUOJF'}
+  - name: p3_width
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,WZCVQC GNSRDQ,HGPFKO'}
+  - name: p4_width
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,WZCVQC CGHMLF,VOIJXM'}
+  - name: p5_width
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,WZCVQC SSYGTA,VQMQWB'}
+  - name: label_4
+    properties: {bold: true, text: Height}
+    type: Label
+    layout_properties: {grid_position: 'CNEAZV,UGZKGD ZJPVYE,ZPTZPC'}
+  - name: p1_height
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,UGZKGD LRHDRI,HKGIDE'}
+  - name: p2_height
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,UGZKGD AMRYYU,PQQKRH'}
+  - name: p3_height
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,UGZKGD SNUXXB,ELKNIO'}
+  - name: p4_height
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,UGZKGD KUXXRV,RQSKSZ'}
+  - name: p5_height
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,UGZKGD LYPXLM,SWCHOF'}
+  - name: label_7
+    properties: {text: FPS, bold: true}
+    type: Label
+    layout_properties: {grid_position: 'CNEAZV,SYUTLB FVDRPM,HTFGDW'}
+  - name: p1_fps
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,SYUTLB GETXDY,JXFAJF'}
+  - name: p2_fps
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,SYUTLB JJDGOO,ZNTQFA'}
+  - name: p3_fps
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,SYUTLB XFGQMO,BAQCJA'}
+  - name: p4_fps
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,SYUTLB CCIEAV,EQAJBU'}
+  - name: p5_fps
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,SYUTLB CPIBPH,NAFJBK'}
+  - name: label_5
+    properties: {text: CRF, bold: true}
+    type: Label
+    layout_properties: {grid_position: 'CNEAZV,EZQDMG UGHDAF,ZXTIPN'}
+  - name: p1_crf
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,EZQDMG DPBUGI,OJZJQG'}
+  - name: p2_crf
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,EZQDMG TYCUCA,EQWFBR'}
+  - name: p3_crf
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,EZQDMG NDNHVZ,CMTAGM'}
+  - name: p4_crf
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,EZQDMG SBQEQR,LTTXPL'}
+  - name: p5_crf
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,EZQDMG OSSJSS,ISUTCA'}
+  - name: label_6
+    properties: {bold: true, text: Preset}
+    type: Label
+    layout_properties: {grid_position: 'CNEAZV,PGVDNC'}
+  - name: p1_preset
+    properties:
+      items: ['4', '5', '6', '7', '8', '9', '10', '11', '12']
+      include_placeholder: false
+      placeholder: ''
+    type: DropDown
+    layout_properties: {grid_position: 'CNEAZV,PGVDNC ZMMIZW,EUTIEB'}
+    data_bindings: []
+  - name: p2_preset
+    properties:
+      items: ['4', '5', '6', '7', '8', '9', '10', '11', '12', '']
+    type: DropDown
+    layout_properties: {grid_position: 'CNEAZV,PGVDNC ZLBWWL,BHHPVV'}
+    data_bindings: []
+  - name: p3_preset
+    properties:
+      items: ['4', '5', '6', '7', '8', '9', '10', '11', '12', '']
+    type: DropDown
+    layout_properties: {grid_position: 'CNEAZV,PGVDNC XLUCHP,ZFFPEC'}
+    data_bindings: []
+  - name: p4_preset
+    properties:
+      items: ['4', '5', '6', '7', '8', '9', '10', '11', '12']
+    type: DropDown
+    layout_properties: {grid_position: 'CNEAZV,PGVDNC TPYCEQ,YVHHGZ'}
+    data_bindings: []
+  - name: p5_preset
+    properties:
+      items: ['4', '5', '6', '7', '8', '9', '10', '11', '12']
+    type: DropDown
+    layout_properties: {grid_position: 'CNEAZV,PGVDNC HBRHSP,RNCLSM'}
+    data_bindings: []
+  - name: label_9
+    properties: {text: Params, bold: true}
+    type: Label
+    layout_properties: {grid_position: 'CNEAZV,FPWXHB EAWQIL,PHUBQJ'}
+  - name: p1_params
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,FPWXHB RQEKFA,SKAOSM'}
+  - name: p2_params
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,FPWXHB NYZPAM,WICTCJ'}
+  - name: p3_params
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,FPWXHB ZXNUQN,HTAATC'}
+  - name: p4_params
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,FPWXHB WRFGLW,RQFGAM'}
+  - name: p5_params
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'CNEAZV,FPWXHB VDINGI,SVWXEH'}
+is_package: false
+custom_component: true

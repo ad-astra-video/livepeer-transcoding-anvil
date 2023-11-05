@@ -1,0 +1,7 @@
+container: {type: ColumnPanel}
+components:
+- name: file_info_data
+  properties: {height: 308}
+  type: TextArea
+  layout_properties: {grid_position: 'BLAPSL,GTYTAP'}
+is_package: true

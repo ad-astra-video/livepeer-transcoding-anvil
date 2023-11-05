@@ -1,0 +1,24 @@
+container: {type: ColumnPanel}
+components:
+- name: column_panel_1
+  properties: {col_widths: '{"IHWZWV":10,"DHADNI":50}'}
+  type: ColumnPanel
+  layout_properties: {grid_position: 'XLDVKN,NELHYS'}
+  components:
+  - name: label_2
+    properties: {text: Broadcasters, bold: true, font_size: 15}
+    type: Label
+    layout_properties: {grid_position: 'WXHHUM,IHWZWV'}
+  - name: broadcaster_urls
+    properties: {}
+    type: TextBox
+    layout_properties: {grid_position: 'WXHHUM,DHADNI'}
+  - name: label_1
+    properties: {text: Default Job Profiles, bold: true, font_size: 15}
+    type: Label
+    layout_properties: {grid_position: 'XFHEJZ,DSQLYC'}
+  - name: job_profiles_1
+    properties: {}
+    type: form:Main.JobProfiles
+    layout_properties: {grid_position: 'QXMPJZ,JNDSEJ'}
+is_package: true

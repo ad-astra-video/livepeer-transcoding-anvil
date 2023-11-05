@@ -1,0 +1,45 @@
+is_package: true
+container:
+  type: HtmlTemplate
+  properties: {html: '@theme:standard-page.html'}
+  event_bindings: {show: form_show}
+components:
+- type: FlowPanel
+  properties: {}
+  name: navbar_links
+  layout_properties: {slot: nav-right}
+  components:
+  - name: job_settings
+    properties: {text: SETTINGS}
+    type: Link
+    layout_properties: {}
+    components: []
+  - name: network_settings
+    properties: {text: NETWORK}
+    type: Link
+    layout_properties: {}
+- name: label_1
+  properties: {text: AV1 Transcoding}
+  type: Label
+  layout_properties: {slot: title}
+- name: side_bar
+  properties: {}
+  type: ColumnPanel
+  layout_properties: {slot: left-nav}
+  components:
+  - name: request_transcoding
+    properties: {text: New}
+    type: Button
+    layout_properties: {grid_position: 'YJKMKX,LINTHO'}
+  - name: transcoding_progress
+    properties: {text: In Progress}
+    type: Button
+    layout_properties: {grid_position: 'USJTQY,JLLFUO'}
+  - name: completed_transcoding
+    properties: {text: Completed}
+    type: Button
+    layout_properties: {grid_position: 'KPGSDT,FFRDVJ'}
+- name: content_panel
+  properties: {}
+  type: ColumnPanel
+  layout_properties: {slot: default}
