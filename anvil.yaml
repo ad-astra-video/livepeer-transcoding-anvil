@@ -42,10 +42,10 @@ db_schema:
       type: link_single
       target: users
     - name: file_name
-      admin_ui: {order: 1, width: 200}
+      admin_ui: {order: 7, width: 200}
       type: string
-    - name: profiles
-      admin_ui: {width: 200, order: 4}
+    - name: job_details
+      admin_ui: {order: 4, width: 200}
       type: simpleObject
     - name: in_progress
       admin_ui: {width: 200, order: 5}
@@ -53,6 +53,9 @@ db_schema:
     - name: file_s3_url
       admin_ui: {width: 200, order: 6}
       type: string
+    - name: error
+      admin_ui: {width: 200, order: 8}
+      type: simpleObject
     title: Jobs
   settings:
     client: none
