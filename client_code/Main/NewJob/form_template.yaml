@@ -16,7 +16,7 @@ components:
     layout_properties: {grid_position: 'GJRWRA,AYLBUQ'}
     event_bindings: {change: load_file_change}
   - name: show_file_info
-    properties: {text: Info}
+    properties: {text: Info, enabled: false}
     type: Button
     layout_properties: {grid_position: 'GJRWRA,SWGWNA'}
   - name: file_name

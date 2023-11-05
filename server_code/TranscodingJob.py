@@ -5,6 +5,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.users
 import anvil.server
+import ffmpeg
 
 # This is a server module. It runs on the Anvil server,
 # rather than in the user's browser.
@@ -20,12 +21,16 @@ import anvil.server
 #
 @anvil.server.callable
 @anvil.server.background_task
-def save_file_loaded(file_name, file):
+def save_file_loaded(file):
   user = anvil.users.get_user()
-  fn = "%s_%s" % (user.get_id(), name)
-  app_tables.jobs.add_row(file_name=file_name,user=user,file=file)
-  print("source file saved for %s %s" % (user.get_id(), file_name)
-
+  fn = "%s_%s" % (user.get_id(), file.name)
+  app_tables.jobs.add_row(file_name=file.name,user=user, file=file)
+  print("source file saved for %s %s" % (user.get_id(), file_name))
+  
 @anvil.server.callable
 def start_transcoding_job(file_name, file, profiles):
-  file = anvil.BlobMedia()
+  user = anvil.users.get_user()
+  job = app_tables.jobs.get(user=user, file_name=file_name)
+  #set profiles of job and start it
+  job.update(profiles=profiles)
+  
