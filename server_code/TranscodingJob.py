@@ -31,9 +31,7 @@ def save_file_loaded(file):
 @anvil.server.http_endpoint('/transcode', authenticate_users=True)
 def transcode():
   req_data = request.body_json
-  job = {"requester":request.remote_address,"job_data":req_data}
-  start_transcode(job)
-  job = app_tables.jobs.add_row(user=anvil.users.get_user(), job_details=req_data, in_progress=True)
+  job = app_tables.jobs.add_row(user=anvil.users.get_user(), job_details=req_data, in_progress=True, req_url=request.remote_address)
   #start transcoding job
   start_transcode(job)
   
@@ -41,6 +39,12 @@ def transcode():
 def start_transcode(job):
   job_details = job['job_details']
   #download the file
+  if not os.path.exists("/srv/videos/inputs"):
+    os.makedirs("/srv/videos/inputs", exist_ok=True)
+  if not os.path.exists("/srv/videos/segments"):
+    os.makedirs("/srv/videos/segments", exist_ok=True)
+  if not os.path.exists("/srv/videos/transcoded"):
+    os.makedirs("/srv/videos/transcoded", exist_ok=True)
   try:
     s3 = boto3.client(service_name='s3', 
                     aws_access_key_id=job_details["input"]["credentials"]["accessKeyId"], 
@@ -89,14 +93,59 @@ def start_transcode_requests_watcher(job, vid_fn, vid_ext):
               transcodes_in_process[t] = send_transcode_request(transcodes_in_process[t].task_state['job'], transcodes_in_process[t].task_state['segment'], transcodes_in_process[t].task_state['attempt'])
             
       
-      max_retry = 5
 @anvil.server.background_task
 def send_transcode_request(job, segment, attempt):
   anvil.server.task_state['segment'] = segment
   anvil.server.task_state['job'] = job
   anvil.server.task_state['attempt'] = attempt
+  anvil.server.task_state['error'] = ""
+  anvil.server.task_state['retry'] = True
+  job_details = job['job_details']
   
-  job_data = job['job_details']
+  #get segment information
+  try:
+    probe = ffmpeg.probe(segment)
+    video_stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
+    width = int(video_stream['width'])
+    height = int(video_stream['height'])
+  except ffmpeg.Error as e:
+    print("Error: Could not get file information "+e.stderr)
+    anvil.server.task_state['error'] = "could not get segment information"
+    add_error_segment(job, segment, attempts)
+    return
+    
+  with open(segment,'rb') as segment_file:
+    data = segment_file.read()
+    seg_name = segment.split("/")[-1]
+      
+    try:
+      headers = {'Accept':'multipart/mixed','Content-Duration':'10000','Content-Resolution':str(width)+"x"+str(height)}
+      resp = anvil.http.request("http://127.0.0.1:3935/live/"+seg_name, 
+                               method="POST",
+                               headers = {'Accept':'multipart/mixed','Content-Duration':'10000','Content-Resolution':'1920x1080'},
+                               data=data,
+                               timeout=60)
+      #save the transcoded renditions
+      if resp.headers['content-type'][:15] =='multipart/mixed':
+        transcoded_segment_folder = os.path.dirname(segment.replace("/srv/videos/segments/", "/srv/videos/transcoded/"))
+        decoded = MultipartDecoder.from_response(resp)
+        for part in decoded.parts:
+          disposition = part.headers[b'content-disposition']
+          filename = parse_stream_resp_hdr(disposition)['filename']  
+          rendition = part.headers[b'rendition-name']
+          transcoded_file_name = transcoded_segment_folder+"/"+rendition+"/"+filename
+          #make directories for transcoded segments
+          os.makedirs(os.path.dirname(CLIP_RESULTS_PATH.format(eth_address=eth_address, region=WORKER_REGION, results_file='0.ts')), exist_ok=True)
+          #get the binary data of the rendition
+          rendition = part.content #actual transcoded stream
+          with open(transcoded_file_name,'wb') as t:
+              t.write(rendition)
+        
+        #received completed segment add to completed segments
+        add_completed_segment(job, transcoded_file_name, attempt)
+    except anvil.http.HttpError as e:
+      print(f"Segment Transcode Error:  {e.status} {e.content}")
+      anvil.server.task_state['error'] = f"{e.status} {e.content}"
   
 def add_completed_segment(job, segment, attempts):
   if job['completed_segments'] != None:

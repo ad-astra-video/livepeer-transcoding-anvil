@@ -62,6 +62,9 @@ db_schema:
     - name: completed_segments
       admin_ui: {width: 200, order: 10}
       type: simpleObject
+    - name: req_url
+      admin_ui: {width: 200, order: 11}
+      type: string
     title: Jobs
   settings:
     client: none
