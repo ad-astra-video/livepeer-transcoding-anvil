@@ -3,8 +3,7 @@ from anvil.google.drive import app_files
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-import anvil.users
-import anvil.server
+import anvil.users, anvil.server, anvil.http
 from anvil.server import http_endpoint, request
 import json, boto3
 import ffmpeg, pathlib
@@ -29,7 +28,6 @@ def save_file_loaded(file):
   app_tables.jobs.add_row(file_name=file.name,user=user, file=file)
   print("source file saved for %s %s" % (user.get_id(), file.name))
 
-
 @anvil.server.http_endpoint('/transcode', authenticate_users=True)
 def transcode():
   req_data = request.body_json
@@ -39,17 +37,16 @@ def transcode():
   #start transcoding job
   start_transcode(job)
   
-
 @anvil.server.background_task
 def start_transcode(job):
-  job_data = job['job_details']
+  job_details = job['job_details']
   #download the file
   try:
     s3 = boto3.client(service_name='s3', 
-                    aws_access_key_id=job_data["input"]["credentials"]["accessKeyId"], 
-                    aws_secret_access_key=job_data["input"]["credentials"]["secretAccessKey"])
-    fp = f"/srv/videos/inputs/{job['user'].get_id()}_{job_data['input']['bucket']}_{job_data['input']['path']}"
-    s3.download_file(job_data["input"]["bucket"], job_data["input"]["path"], fp)
+                    aws_access_key_id=job_details["input"]["credentials"]["accessKeyId"], 
+                    aws_secret_access_key=job_details["input"]["credentials"]["secretAccessKey"])
+    fp = f"/srv/videos/inputs/{job['user'].get_id()}_{job_details['input']['bucket']}_{job_details['input']['path']}"
+    s3.download_file(job_details["input"]["bucket"], job_details["input"]["path"], fp)
   except botocore.exceptions.ClientError as e:
     job['error'] = e.response
     if e.response['Error']['Code'] == "404":
@@ -59,19 +56,59 @@ def start_transcode(job):
     return
 
   #start watcher that will submit segments for transcoding
-  vid_path = pathlib.Path(job_data['input']['path'])
+  vid_path = pathlib.Path(job_details['input']['path'])
   vid_ext = vid_path.suffix
-  vid_fn = vid_path.stem
-  start_transcode_requests_watcher(5, job['user'].get_id(), job_data['input']['bucket'], vid_path.stem)
+  vid_fn = f"/srv/videos/segments/{job['user'].get_id()}_{job_details['input']['bucket']}_{vid_path.stem}"
+  start_transcode_requests_watcher(job, vid_fn, vid_ext)
   #segment the video
-  out_seg = f"/srv/videos/segments/{job['user'].get_id()}_{job_data['input']['bucket']}_{job_data['input']['path']}_%d{vid_ext}"
-  ffmpeg.input(fp).output(out_seg, f='segment', segment_time='10').run()
+  ffmpeg.input(fp).output(f"{vid_fn}_%d{vid_ext}", f='segment', segment_time='10').run()
 
 @anvil.server.background_task
-def start_transcode_requests_watcher(workers_cnt, user, bucket, path):
-  #
+def start_transcode_requests_watcher(job, vid_fn, vid_ext):
+  #give segmenter some time to start up
   time.sleep(10)
+  transcodes_in_process = []
+  seg_num = 0
+  while True:
+    if len(transcodes_in_process) <= 5:
+      seg = f"{vid_fn}_{seg_num}{vid_ext}"
+      if os.path.exists(seg):
+        t_proc = send_transcode_request(job, seg, 1)
+        transcodes_in_process.append(t_proc)
+        seg_num += 1 #move to next segment
+      else:
+        time.sleep(1) #let segmenter catch up
+    else:
+      for t in range(0,5):
+        t_status = transcodes_in_process[t].get_termination_status()
+        if t_status != None:
+          if t_status == "completed":
+            transcodes_in_process.pop(t)
+          else:
+            if t_status == "failed":
+              transcodes_in_process[t] = send_transcode_request(transcodes_in_process[t].task_state['job'], transcodes_in_process[t].task_state['segment'], transcodes_in_process[t].task_state['attempt'])
+            
+      
+      max_retry = 5
+@anvil.server.background_task
+def send_transcode_request(job, segment, attempt):
+  anvil.server.task_state['segment'] = segment
+  anvil.server.task_state['job'] = job
+  anvil.server.task_state['attempt'] = attempt
   
+  job_data = job['job_details']
+  
+def add_completed_segment(job, segment, attempts):
+  if job['completed_segments'] != None:
+    job['completed_segments'].append({"segment":segment, "attempts":attempt})
+  else:
+    job['completed_segments'] = [].append({"segment":segment, "attempts":attempt})
+
+def add_error_segment(job, segment, attempts):
+  if job['error_segments'] != None:
+    job['error_segments'].append({"segment":segment, "attempts":attempt})
+  else:
+    job['error_segments'] = [].append({"segment":segment, "attempts":attempt})
 
 #  livepeer.transcode({
 #  input: {
