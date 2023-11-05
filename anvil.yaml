@@ -44,15 +44,15 @@ db_schema:
     - name: file_name
       admin_ui: {order: 1, width: 200}
       type: string
-    - name: file
-      admin_ui: {width: 200}
-      type: media
     - name: profiles
       admin_ui: {width: 200, order: 4}
       type: simpleObject
     - name: in_progress
       admin_ui: {width: 200, order: 5}
       type: bool
+    - name: file_s3_url
+      admin_ui: {width: 200, order: 6}
+      type: string
     title: Jobs
   settings:
     client: none
