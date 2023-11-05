@@ -58,16 +58,19 @@ def start_transcode(job):
       print("error getting file")
     return
 
+  #start watcher that will submit segments for transcoding
   vid_path = pathlib.Path(job_data['input']['path'])
   vid_ext = vid_path.suffix
   vid_fn = vid_path.stem
-  start_transcode_requests_watcher(job['user'].get_id(), job_data['input']['bucket'], vid_path.stem)
+  start_transcode_requests_watcher(5, job['user'].get_id(), job_data['input']['bucket'], vid_path.stem)
   #segment the video
   out_seg = f"/srv/videos/segments/{job['user'].get_id()}_{job_data['input']['bucket']}_{job_data['input']['path']}_%d{vid_ext}"
   ffmpeg.input(fp).output(out_seg, f='segment', segment_time='10').run()
 
 @anvil.server.background_task
-def start_transcode_requests_watcher(user, bucket, path):
+def start_transcode_requests_watcher(workers_cnt, user, bucket, path):
+  #
+  time.sleep(10)
   
 
 #  livepeer.transcode({
