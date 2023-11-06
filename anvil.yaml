@@ -1,5 +1,28 @@
-allow_embedding: false
+dependencies:
+- dep_id: dep_cex51kqgmsq7lo
+  version: {dev: false}
+  resolution_hints: {app_id: 25RFDFZZSJA6VQQ7, name: Clone of Progress Bar, package_name: ProgressBar}
+services:
+- source: /runtime/services/tables.yml
+  client_config: {}
+  server_config: {}
+- source: /runtime/services/anvil/users.yml
+  client_config: {allow_signup: true, enable_automatically: true, use_email: true,
+    confirm_email: true, use_token: false, use_google: false, allow_remember_me: true,
+    remember_me_days: 30}
+  server_config: {user_table: users}
+- source: /runtime/services/google.yml
+  client_config: {}
+  server_config: {}
+- source: /runtime/services/anvil/files.yml
+  client_config: {}
+  server_config: {file_table: files}
+startup: {type: form, module: Main}
 package_name: Livepeer_Transcoding
+allow_embedding: false
+name: Livepeer Transcoding
+runtime_options: {version: 2, client_version: '3', server_version: python3-full, server_spec: null}
+startup_form: null
 db_schema:
   users:
     client: none
@@ -119,22 +142,3 @@ db_schema:
       admin_ui: {width: 200, order: 4}
       type: media
     title: Media
-startup: {type: form, module: Main}
-name: Livepeer Transcoding
-startup_form: null
-runtime_options: {version: 2, client_version: '3', server_version: python3-full, server_spec: null}
-services:
-- source: /runtime/services/tables.yml
-  client_config: {}
-  server_config: {}
-- source: /runtime/services/anvil/users.yml
-  client_config: {allow_signup: true, enable_automatically: true, use_email: true,
-    confirm_email: true, use_token: false, use_google: false, allow_remember_me: true,
-    remember_me_days: 30}
-  server_config: {user_table: users}
-- source: /runtime/services/google.yml
-  client_config: {}
-  server_config: {}
-- source: /runtime/services/anvil/files.yml
-  client_config: {}
-  server_config: {file_table: files}
