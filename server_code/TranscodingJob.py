@@ -102,7 +102,7 @@ def upload_asset(**params):
   
   pass
 
-@anvil.server.http_endpoint('/transcode', authenticate_users=True, methods=['POST'],)
+@anvil.server.http_endpoint('/transcode', authenticate_users=True, methods=['POST'])
 def transcode(**params):
   req_data = request.body_json
   job = app_tables.jobs.add_row(user=anvil.users.get_user(), job_details=req_data, in_progress=True, req_url=request.remote_address)
