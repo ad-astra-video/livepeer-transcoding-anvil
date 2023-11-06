@@ -25,6 +25,10 @@ import anvil.media
 #
 @anvil.server.callable
 def save_file_loaded(file):
+  save_file(file)
+
+@anvil.server.background_task
+def save_file(file):
   if not os.path.exists("/srv/videos/inputs"):
     os.makedirs("/srv/videos/inputs", exist_ok=True)
   
@@ -34,7 +38,7 @@ def save_file_loaded(file):
     inp.write(file.get_bytes())
   job = app_tables.jobs.add_row(local_file=file.name,user=user,uploaded=True)
   print("source file saved for %s %s" % (user.get_id(), file.name))
-
+  
 @anvil.server.callable
 def get_loaded_files():
     user = anvil.users.get_user()
