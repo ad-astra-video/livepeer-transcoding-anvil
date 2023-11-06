@@ -27,7 +27,27 @@ def save_file_loaded(file):
   fn = "%s_%s" % (user.get_id(), file.name)
   app_tables.jobs.add_row(file_name=file.name,user=user, file=file)
   print("source file saved for %s %s" % (user.get_id(), file.name))
+  
 
+@anvil.server.callable
+def start_transcoding_job(file_name, profiles):
+  user = anvil.users.get_user()
+  job_details = {"input": { "type": "local",
+                            "filename": file_name,
+                          },
+                 "storage": { "type": "local",
+                            },
+                 "profiles": profiles
+                }  
+  
+
+@anvil.server.callable
+def get_file_info(file_name):
+  user = anvil.users.get_user()
+  job = app_tables.jobs.get(user=user, file_name=file_name)
+  if job != None:
+    pass
+    
 @anvil.server.http_endpoint('/transcode', authenticate_users=True)
 def transcode():
   req_data = request.body_json
@@ -106,20 +126,20 @@ def send_transcode_request(job, segment, attempt):
   try:
     probe = ffmpeg.probe(segment)
     video_stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
-    width = int(video_stream['width'])
-    height = int(video_stream['height'])
+    width = video_stream['width']
+    height = video_stream['height']
+    duration = round(probe['format']['duration']*1000,0)
   except ffmpeg.Error as e:
     print("Error: Could not get file information "+e.stderr)
     anvil.server.task_state['error'] = "could not get segment information"
     add_error_segment(job, segment, attempts)
     return
     
-  with open(segment,'rb') as segment_file:
+  with open(segment, 'rb') as segment_file:
     data = segment_file.read()
-    seg_name = segment.split("/")[-1]
-      
+    seg_name = segment.split("/")[-1]      
     try:
-      headers = {'Accept':'multipart/mixed','Content-Duration':'10000','Content-Resolution':str(width)+"x"+str(height)}
+      headers = {'Accept':'multipart/mixed','Content-Duration':str(duration),'Content-Resolution':str(width)+"x"+str(height)}
       resp = anvil.http.request("http://127.0.0.1:3935/live/"+seg_name, 
                                method="POST",
                                headers = {'Accept':'multipart/mixed','Content-Duration':'10000','Content-Resolution':'1920x1080'},

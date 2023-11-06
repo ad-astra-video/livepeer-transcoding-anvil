@@ -1,7 +1,7 @@
 container: {type: ColumnPanel}
 components:
 - name: content_panel_copy_1
-  properties: {col_widths: '{"SWGWNA":10,"OYGCYD":15,"AYLBUQ":10,"WTCBLK":23}', col_spacing: small}
+  properties: {col_widths: '{"SWGWNA":10,"OYGCYD":15,"AYLBUQ":10,"NPZBPQ":19}', col_spacing: small}
   type: ColumnPanel
   layout_properties: {grid_position: '', full_width_row: false}
   components:
@@ -22,8 +22,8 @@ components:
     layout_properties: {grid_position: 'GJRWRA,SWGWNA'}
   - name: file_name
     properties: {}
-    type: Label
-    layout_properties: {grid_position: 'GJRWRA,WTCBLK'}
+    type: DropDown
+    layout_properties: {grid_position: 'GJRWRA,NPZBPQ'}
   - name: spacer_1_copy_1
     properties: {height: 32}
     type: Spacer
