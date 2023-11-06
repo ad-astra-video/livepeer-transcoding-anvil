@@ -36,7 +36,7 @@ def save_file(file):
   fp = f"/srv/videos/inputs/{user.get_id()}_{file.name}"
   with open(fp, 'wb') as inp:
     inp.write(file.get_bytes())
-  job = app_tables.jobs.add_row(local_file=file.name,user=user,uploaded=True)
+  job = app_tables.jobs.add_row(local_file=fp,user=user,uploaded=True)
   print("source file saved for %s %s" % (user.get_id(), file.name))
   
 @anvil.server.callable
