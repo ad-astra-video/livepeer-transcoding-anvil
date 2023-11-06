@@ -81,7 +81,7 @@ components:
     properties: {}
     type: TextBox
     layout_properties: {grid_position: 'CNEAZV,WZCVQC CHKONR,EPCBPW'}
-  - name: p2_witdth
+  - name: p2_width
     properties: {}
     type: TextBox
     layout_properties: {grid_position: 'CNEAZV,WZCVQC JPTUVS,KBUOJF'}

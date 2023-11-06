@@ -64,7 +64,7 @@ class JobProfiles(JobProfilesTemplate):
       
   def get_profiles(self):
     profiles = []
-    profiles.append({"name": self.p1_name.text, 
+    profiles.append({"name": self.p1_name.text,
                      "encoder": self.p1_codec.selected_value,
                      "width": self.p1_width.text,
                      "height": self.p1_height.text,
