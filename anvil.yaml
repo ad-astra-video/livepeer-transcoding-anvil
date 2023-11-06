@@ -98,6 +98,27 @@ db_schema:
       admin_ui: {order: 2, width: 200}
       type: string
     title: Files
+  media:
+    client: none
+    server: full
+    columns:
+    - name: user
+      admin_ui: {width: 200, order: 0}
+      type: link_single
+      target: users
+    - name: file_name
+      admin_ui: {width: 200, order: 1}
+      type: string
+    - name: chunk_start
+      admin_ui: {width: 200, order: 2}
+      type: number
+    - name: chunk_end
+      admin_ui: {width: 200, order: 3}
+      type: number
+    - name: data
+      admin_ui: {width: 200, order: 4}
+      type: media
+    title: Media
 startup: {type: form, module: Main}
 name: Livepeer Transcoding
 startup_form: null

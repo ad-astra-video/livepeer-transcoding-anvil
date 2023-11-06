@@ -97,11 +97,6 @@ def get_file_info(file_name, as_json=False):
     except Exception as ee:
       return "file not available"
 
-@anvil.server.http_endpoint("/upload", authenticate_users=True, methods=['POST'])
-def upload_asset(**params):
-  
-  pass
-
 @anvil.server.http_endpoint('/transcode', authenticate_users=True, methods=['POST'])
 def transcode(**params):
   req_data = request.body_json
