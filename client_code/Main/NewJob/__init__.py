@@ -19,7 +19,11 @@ class NewJob(NewJobTemplate):
     user_settings = anvil.server.call('get_settings')
     if user_settings:
       self.transcoding_profiles.update_profiles(user_settings['profiles'])
-    
+    #get user files
+    user_files = anvil.server.call('get_loaded_files')
+    for fn in user_files:
+      self.file_names.items.append(fn)
+      
   def load_file_change(self, file, **event_args):
     """This method is called when a new file is loaded into this FileLoader"""
     self.file_name.text = "uploading..."
