@@ -16,7 +16,7 @@ class NewJob(NewJobTemplate):
     self.init_components(**properties)
 
     # Any code you write here will run before the form opens.
-    user_settings = app_tables.settings.get(user=user)
+    user_settings = anvil.server.call('get_settings')
     if user_settings:
       self.transcoding_profiles.update_profiles(user_settings['profiles'])
     

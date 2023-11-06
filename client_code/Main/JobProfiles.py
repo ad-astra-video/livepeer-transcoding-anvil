@@ -64,50 +64,50 @@ class JobProfiles(JobProfilesTemplate):
       
   def get_profiles(self):
     profiles = []
-    profiles.append({"name": self.transcoding_profiles.p1_name.text, 
-                     "encoder": self.transcoding_profiles.p1_codec.selected_value,
-                     "width": self.transcoding_profiles.p1_width.text,
-                     "height": self.transcoding_profiles.p1_height.text,
-                     "fps": self.transcoding_profiles.p1_fps.text,
-                     "quality": self.transcoding_profiles.p1_crf,
-                     "av1Preset": self.transcoding_profiles.p1_preset.selected_value,
-                     "av1Params": self.transcoding_profiles.p1_params
+    profiles.append({"name": self.p1_name.text, 
+                     "encoder": self.p1_codec.selected_value,
+                     "width": self.p1_width.text,
+                     "height": self.p1_height.text,
+                     "fps": self.p1_fps.text,
+                     "quality": self.p1_crf,
+                     "av1Preset": self.p1_preset.selected_value,
+                     "av1Params": self.p1_params
                     })
-    profiles.append({"name": self.transcoding_profiles.p2_name.text, 
-                     "encoder": self.transcoding_profiles.p2_codec.selected_value,
-                     "width": self.transcoding_profiles.p2_width.text,
-                     "height": self.transcoding_profiles.p2_height.text,
-                     "fps": self.transcoding_profiles.p2_fps.text,
-                     "quality": self.transcoding_profiles.p2_crf,
-                     "av1Preset": self.transcoding_profiles.p2_preset.selected_value,
-                     "av1Params": self.transcoding_profiles.p2_params
+    profiles.append({"name": self.p2_name.text, 
+                     "encoder": self.p2_codec.selected_value,
+                     "width": self.p2_width.text,
+                     "height": self.p2_height.text,
+                     "fps": self.p2_fps.text,
+                     "quality": self.p2_crf,
+                     "av1Preset": self.p2_preset.selected_value,
+                     "av1Params": self.p2_params
                     })
-    profiles.append({"name": self.transcoding_profiles.p3_name.text, 
-                     "encoder": self.transcoding_profiles.p3_codec.selected_value,
-                     "width": self.transcoding_profiles.p3_width.text,
-                     "height": self.transcoding_profiles.p3_height.text,
-                     "fps": self.transcoding_profiles.p3_fps.text,
-                     "quality": self.transcoding_profiles.p3_crf,
-                     "av1Preset": self.transcoding_profiles.p3_preset.selected_value,
-                     "av1Params": self.transcoding_profiles.p3_params
+    profiles.append({"name": self.p3_name.text, 
+                     "encoder": self.p3_codec.selected_value,
+                     "width": self.p3_width.text,
+                     "height": self.p3_height.text,
+                     "fps": self.p3_fps.text,
+                     "quality": self.p3_crf,
+                     "av1Preset": self.p3_preset.selected_value,
+                     "av1Params": self.p3_params
                     })
-    profiles.append({"name": self.transcoding_profiles.p4_name.text, 
-                     "encoder": self.transcoding_profiles.p4_codec.selected_value,
-                     "width": self.transcoding_profiles.p4_width.text,
-                     "height": self.transcoding_profiles.p4_height.text,
-                     "fps": self.transcoding_profiles.p4_fps.text,
-                     "quality": self.transcoding_profiles.p4_crf,
-                     "av1Preset": self.transcoding_profiles.p4_preset.selected_value,
-                     "av1Params": self.transcoding_profiles.p4_params
+    profiles.append({"name": self.p4_name.text, 
+                     "encoder": self.p4_codec.selected_value,
+                     "width": self.p4_width.text,
+                     "height": self.p4_height.text,
+                     "fps": self.p4_fps.text,
+                     "quality": self.p4_crf,
+                     "av1Preset": self.p4_preset.selected_value,
+                     "av1Params": self.p4_params
                     })
-    profiles.append({"name": self.transcoding_profiles.p5_name.text, 
-                     "encoder": self.transcoding_profiles.p5_codec.selected_value,
-                     "width": self.transcoding_profiles.p5_width.text,
-                     "height": self.transcoding_profiles.p5_height.text,
-                     "fps": self.transcoding_profiles.p5_fps.text,
-                     "quality": self.transcoding_profiles.p5_crf,
-                     "av1Preset": self.transcoding_profiles.p5_preset.selected_value,
-                     "av1Params": self.transcoding_profiles.p5_params
+    profiles.append({"name": self.p5_name.text, 
+                     "encoder": self.p5_codec.selected_value,
+                     "width": self.p5_width.text,
+                     "height": self.p5_height.text,
+                     "fps": self.p5_fps.text,
+                     "quality": self.p5_crf,
+                     "av1Preset": self.p5_preset.selected_value,
+                     "av1Params": self.p5_params
                     })
     return profiles
   

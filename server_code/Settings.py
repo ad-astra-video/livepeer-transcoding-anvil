@@ -21,6 +21,11 @@ import anvil.server
 #   return 42
 #
 @anvil.server.callable
+def get_settings():
+    user = anvil.users.get_user()
+    return app_tables.settings.get(user=user)
+    
+@anvil.server.callable
 def save_settings(settings):
   user = anvil.users.get_user()
   user_settings = app_tables.settings.get(user=user)
