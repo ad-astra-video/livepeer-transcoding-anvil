@@ -1,7 +1,7 @@
 container: {type: ColumnPanel}
 components:
 - name: content_panel_copy_1
-  properties: {col_widths: '{"OYGCYD":15,"AYLBUQ":10,"EFDAUX":14,"QHYSHF":7,"MQPFYI":53}',
+  properties: {col_widths: '{"OYGCYD":11,"AYLBUQ":9,"EFDAUX":22,"QHYSHF":7,"MQPFYI":53}',
     col_spacing: small}
   type: ColumnPanel
   layout_properties: {grid_position: '', full_width_row: false}
