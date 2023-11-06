@@ -18,7 +18,8 @@ class NewJob(NewJobTemplate):
     # Any code you write here will run before the form opens.
     user_settings = app_tables.settings.get(user=user)
     if user_settings:
-      
+      self.transcoding_profiles.update_profiles(user_settings['profiles'])
+    
   def load_file_change(self, file, **event_args):
     """This method is called when a new file is loaded into this FileLoader"""
     self.file_name.text = "uploading..."

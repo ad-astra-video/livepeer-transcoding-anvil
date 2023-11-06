@@ -19,7 +19,7 @@ components:
     properties: {text: Default Job Profiles, bold: true, font_size: 15}
     type: Label
     layout_properties: {grid_position: 'XFHEJZ,DSQLYC'}
-  - name: job_profiles_1
+  - name: transcoding_profiles
     properties: {}
     type: form:Main.JobProfiles
     layout_properties: {grid_position: 'QXMPJZ,JNDSEJ'}
