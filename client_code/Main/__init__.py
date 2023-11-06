@@ -8,6 +8,8 @@ from anvil.tables import app_tables
 import anvil.users
 import anvil.server
 from .NewJob import NewJob
+from .Settings import Settings
+
 class Main(MainTemplate):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
@@ -20,3 +22,11 @@ class Main(MainTemplate):
   def form_show(self, **event_args):
     """This method is called when the form is shown on the page"""
     self.content_panel.add_component(NewJob())
+
+  def job_settings_click(self, **event_args):
+    """This method is called when the link is clicked"""
+    alert(
+      content=Settings(),
+      title="Update Settings",
+      large=True
+    )

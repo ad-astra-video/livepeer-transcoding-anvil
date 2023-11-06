@@ -14,6 +14,7 @@ components:
     type: Link
     layout_properties: {}
     components: []
+    event_bindings: {click: job_settings_click}
   - name: network_settings
     properties: {text: NETWORK}
     type: Link

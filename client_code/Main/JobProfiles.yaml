@@ -1,7 +1,7 @@
 container: {type: ColumnPanel}
 components:
 - name: column_panel_1
-  properties: {col_widths: '{"SUARYY":10,"SLOLSV":5,"WZCVQC":5,"UGZKGD":5,"EZQDMG":7,"PGVDNC":10,"FPWXHB":28,"SYUTLB":5}'}
+  properties: {col_widths: '{"SUARYY":10,"SLOLSV":10,"WZCVQC":5,"UGZKGD":5,"EZQDMG":5,"PGVDNC":7,"FPWXHB":28,"SYUTLB":5}'}
   type: ColumnPanel
   layout_properties: {grid_position: 'JGJUHE,LRLFQP'}
   components:
