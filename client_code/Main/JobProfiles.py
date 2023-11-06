@@ -102,12 +102,12 @@ class JobProfiles(JobProfilesTemplate):
                      "av1Preset": self.p4_preset.selected_value,
                      "av1Params": self.p4_params.text
                     })
-    profiles.append({"name": self.p5_name.text, 
+    profiles.append({"name": self.p5_name.text,
                      "encoder": self.p5_codec.selected_value,
                      "width": self.p5_width.text,
                      "height": self.p5_height.text,
-                     "fps": self.p5_fps.text.text,
-                     "quality": self.p5_crf,
+                     "fps": self.p5_fps.text,
+                     "quality": self.p5_crf.text,
                      "av1Preset": self.p5_preset.selected_value,
                      "av1Params": self.p5_params.text
                     })
