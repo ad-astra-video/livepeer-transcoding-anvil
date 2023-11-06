@@ -46,8 +46,7 @@ def save_file(file):
     print("job added for: %s %s" % (user.get_id(), fp))
   else:
     print("job already exists for: %s %s" % (user.get_id(), fp))
-  
-  
+
 @anvil.server.callable
 def get_loaded_files():
     user = anvil.users.get_user()
@@ -97,9 +96,13 @@ def get_file_info(file_name, as_json=False):
       return str(e.stderr)
     except Exception as ee:
       return "file not available"
-    
-@anvil.server.http_endpoint('/transcode', authenticate_users=True)
-def transcode():
+
+@anvil.server.http_endpoint("/upload", authenticate_users=True, methods=['POST'])
+def upload_asset(**params):
+  pass
+
+@anvil.server.http_endpoint('/transcode', authenticate_users=True, methods=['POST'],)
+def transcode(**params):
   req_data = request.body_json
   job = app_tables.jobs.add_row(user=anvil.users.get_user(), job_details=req_data, in_progress=True, req_url=request.remote_address)
   #start transcoding job
