@@ -41,7 +41,7 @@ def get_loaded_files():
     files = app_tables.jobs.search(user=user)
     file_list = []
     for fn in files:
-        if os.path.exists(f"/srv/videos/inputs/{user}_{fn['local_file']}"):
+        if os.path.exists(f"/srv/videos/inputs/{user.get_id()}_{fn['local_file']}"):
           file_list.append(fn['local_file'])
     return file_list
       
