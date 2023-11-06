@@ -28,7 +28,15 @@ class NewJob(NewJobTemplate):
   def start_transcoding_click(self, **event_args):
     """This method is called when the button is clicked"""
     profiles = self.transcoding_profiles.get_profiles()
-    
-    pass
+    fn = ""
+    if self.load_file.file != None:
+      fn = self.load_file.file.name
+    else:
+      fn = self.file_names.selected_value
+      
+    if fn != "":
+      anvil.server.call('start_transcoding_job', fn, profiles)
+    else:
+      alert("transcoding did not start, no file selected")
 
   

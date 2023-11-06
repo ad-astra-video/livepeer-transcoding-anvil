@@ -32,9 +32,19 @@ def save_file_loaded(file):
   fp = f"/srv/videos/inputs/{user.get_id()}_{file.name}"
   with open(fp, 'wb') as inp:
     inp.write(file.get_bytes())
-  job = app_tables.jobs.add_row(file_name=file.name,user=user,uploaded=True)
+  job = app_tables.jobs.add_row(local_file=file.name,user=user,uploaded=True)
   print("source file saved for %s %s" % (user.get_id(), file.name))
 
+@anvil.server.callable
+def get_loaded_files():
+    user = anvil.users.get_user()
+    files = app_tables.jobs.search(user=user)
+    file_list = []
+    for fn in files:
+        if os.path.exists(f"{user}_{fn['local_file']}"):
+          file_list.append(fn['local_file'])
+    return file_list
+      
 @anvil.server.callable
 def start_transcoding_job(file_name, profiles):
   user = anvil.users.get_user()

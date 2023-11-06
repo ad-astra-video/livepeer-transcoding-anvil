@@ -20,7 +20,7 @@ components:
     properties: {text: Info, enabled: false}
     type: Button
     layout_properties: {grid_position: 'GJRWRA,SWGWNA'}
-  - name: file_name
+  - name: file_names
     properties: {}
     type: DropDown
     layout_properties: {grid_position: 'GJRWRA,NPZBPQ'}
