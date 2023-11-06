@@ -99,6 +99,7 @@ def get_file_info(file_name, as_json=False):
 
 @anvil.server.http_endpoint("/upload", authenticate_users=True, methods=['POST'])
 def upload_asset(**params):
+  
   pass
 
 @anvil.server.http_endpoint('/transcode', authenticate_users=True, methods=['POST'],)
