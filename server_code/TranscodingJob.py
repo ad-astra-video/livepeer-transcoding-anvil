@@ -26,6 +26,7 @@ import anvil.media
 @anvil.server.callable
 def save_file_loaded(file):
   save_file(file)
+  return
 
 @anvil.server.background_task
 def save_file(file):
@@ -34,19 +35,32 @@ def save_file(file):
   
   user = anvil.users.get_user()
   fp = f"/srv/videos/inputs/{user.get_id()}_{file.name}"
+  print(fp)
   with open(fp, 'wb') as inp:
     inp.write(file.get_bytes())
-  job = app_tables.jobs.add_row(local_file=fp,user=user,uploaded=True)
-  print("source file saved for %s %s" % (user.get_id(), file.name))
+    print("source file saved for %s %s" % (user.get_id(), file.name))
+  #add job to table if does not exist for file
+  jobs = app_tables.jobs.search(user=user, local_file=fp)
+  if len(jobs) == 0:
+    job = app_tables.jobs.add_row(local_file=fp,user=user,uploaded=True)
+    print("job added for: %s %s" % (user.get_id(), fp))
+  else:
+    print("job already exists for: %s %s" % (user.get_id(), fp))
+  
   
 @anvil.server.callable
 def get_loaded_files():
     user = anvil.users.get_user()
-    files = app_tables.jobs.search(user=user)
+    user_id = user.get_id()
+    jobs = app_tables.jobs.search(user=user)
     file_list = []
-    for fn in files:
-        if os.path.exists(f"/srv/videos/inputs/{user.get_id()}_{fn['local_file']}"):
-          file_list.append(fn['local_file'])
+    for job in jobs:
+      if os.path.exists(job['local_file']):
+        fn = job['local_file'].replace('/srv/videos/inputs/'+user_id+"_","")
+        file_list.append(fn)
+      else:
+        print("file does not exist, deleting job for: "+job['local_file'])
+        job.delete()
     return file_list
       
 @anvil.server.callable
@@ -60,7 +74,7 @@ def start_transcoding_job(file_name, profiles):
                  "profiles": profiles
                 }
   
-  job = app_tables.jobs.get(user=user, file_name=file_name, uploaded=True)
+  job = app_tables.jobs.get(user=user, local_file=file_name, uploaded=True)
   if job != None:
     start_transcode(job)
     return "ok"
@@ -70,7 +84,7 @@ def start_transcoding_job(file_name, profiles):
 @anvil.server.callable
 def get_file_info(file_name, as_json=False):
   user = anvil.users.get_user()
-  job = app_tables.jobs.get(user=user, file_name=file_name, uploaded=True)
+  job = app_tables.jobs.get(user=user, local_file=file_name, uploaded=True)
   if job != None:
     try:
       fp = f"/srv/videos/inputs/{user.get_id()}_{file_name}"

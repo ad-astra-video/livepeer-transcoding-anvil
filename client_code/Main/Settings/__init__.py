@@ -14,7 +14,11 @@ class Settings(SettingsTemplate):
     self.init_components(**properties)
 
     # Any code you write here will run before the form opens.
-
+    settings = anvil.server.call('get_settings')
+    if settings != None:
+      self.broadcaster_urls.text = settings["broadcasters"]
+      self.transcoding_profiles.update_profiles(settings["profiles"])
+      
   def save_settings_click(self, **event_args):
     """This method is called when the button is clicked"""
     settings = {"broadcasters":self.broadcaster_urls.text, "profiles": self.transcoding_profiles.get_profiles()}
