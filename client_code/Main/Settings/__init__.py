@@ -17,6 +17,7 @@ class Settings(SettingsTemplate):
 
   def save_settings_click(self, **event_args):
     """This method is called when the button is clicked"""
-    anvil.server.call('save_settings',self.broadcaster_urls.text, self.transcoding_profiles.get_profiles())
+    settings = {"broadcasters":self.broadcaster_urls.text, "profiles": self.transcoding_profiles.get_profiles()}
+    anvil.server.call('save_settings', settings)
     self.raise_event("x-close-alert", value=1)
     

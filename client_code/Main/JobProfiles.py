@@ -7,6 +7,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+import json
 
 class JobProfiles(JobProfilesTemplate):
   def __init__(self, **properties):
@@ -16,6 +17,7 @@ class JobProfiles(JobProfilesTemplate):
     pass
     
   def update_profiles(self, profiles):
+    profiles = json.loads(profiles)
     if len(profiles) > 0:
       self.p1_name.text = profiles[0]["name"]
       self.p1_codec.selected_value = profiles[0]["encoder"]
@@ -109,5 +111,5 @@ class JobProfiles(JobProfilesTemplate):
                      "av1Preset": self.p5_preset.selected_value,
                      "av1Params": self.p5_params
                     })
-    return profiles
+    return json.dumps(profiles)
   

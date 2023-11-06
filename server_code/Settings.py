@@ -29,7 +29,7 @@ def get_settings():
 def save_settings(settings):
   user = anvil.users.get_user()
   user_settings = app_tables.settings.get(user=user)
-  if user_settings:
+  if user_settings != None:
     user_settings.update(broadcasters=settings['broadcasters'], profiles=settings['profiles'])
   else:
-    user_settings.add_row(user=user,broadcasters=settings['broadcasters'],profiles=settings['profiles'])
+    app_tables.settings.add_row(user=user,broadcasters=settings['broadcasters'],profiles=settings['profiles'])
