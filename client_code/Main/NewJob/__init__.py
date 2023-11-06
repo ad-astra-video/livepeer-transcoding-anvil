@@ -27,6 +27,11 @@ class NewJob(NewJobTemplate):
     self.file_names.text = "uploading..."
     anvil.server.call_s('save_file_loaded', file)    
 
+  def start_chunked_upload(self, file):
+    
+    fb = file.get_bytes()
+    
+    
   def start_transcoding_click(self, **event_args):
     """This method is called when the button is clicked"""
     profiles = self.transcoding_profiles.get_profiles()
