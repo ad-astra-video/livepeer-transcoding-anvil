@@ -71,45 +71,45 @@ class JobProfiles(JobProfilesTemplate):
                      "width": self.p1_width.text,
                      "height": self.p1_height.text,
                      "fps": self.p1_fps.text,
-                     "quality": self.p1_crf,
+                     "quality": self.p1_crf.text,
                      "av1Preset": self.p1_preset.selected_value,
-                     "av1Params": self.p1_params
+                     "av1Params": self.p1_params.text
                     })
     profiles.append({"name": self.p2_name.text, 
                      "encoder": self.p2_codec.selected_value,
                      "width": self.p2_width.text,
                      "height": self.p2_height.text,
                      "fps": self.p2_fps.text,
-                     "quality": self.p2_crf,
+                     "quality": self.p2_crf.text,
                      "av1Preset": self.p2_preset.selected_value,
-                     "av1Params": self.p2_params
+                     "av1Params": self.p2_params.text
                     })
     profiles.append({"name": self.p3_name.text, 
                      "encoder": self.p3_codec.selected_value,
                      "width": self.p3_width.text,
                      "height": self.p3_height.text,
                      "fps": self.p3_fps.text,
-                     "quality": self.p3_crf,
+                     "quality": self.p3_crf.text,
                      "av1Preset": self.p3_preset.selected_value,
-                     "av1Params": self.p3_params
+                     "av1Params": self.p3_params.text
                     })
     profiles.append({"name": self.p4_name.text, 
                      "encoder": self.p4_codec.selected_value,
                      "width": self.p4_width.text,
                      "height": self.p4_height.text,
                      "fps": self.p4_fps.text,
-                     "quality": self.p4_crf,
+                     "quality": self.p4_crf.text,
                      "av1Preset": self.p4_preset.selected_value,
-                     "av1Params": self.p4_params
+                     "av1Params": self.p4_params.text
                     })
     profiles.append({"name": self.p5_name.text, 
                      "encoder": self.p5_codec.selected_value,
                      "width": self.p5_width.text,
                      "height": self.p5_height.text,
-                     "fps": self.p5_fps.text,
+                     "fps": self.p5_fps.text.text,
                      "quality": self.p5_crf,
                      "av1Preset": self.p5_preset.selected_value,
-                     "av1Params": self.p5_params
+                     "av1Params": self.p5_params.text
                     })
     return json.dumps(profiles)
   
