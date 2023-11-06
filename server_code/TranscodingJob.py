@@ -91,8 +91,6 @@ def transcode():
 def start_transcode(job):
   job_details = job['job_details']
   #download the file
-  if not os.path.exists("/srv/videos/inputs"):
-    os.makedirs("/srv/videos/inputs", exist_ok=True)
   if not os.path.exists("/srv/videos/segments"):
     os.makedirs("/srv/videos/segments", exist_ok=True)
   if not os.path.exists("/srv/videos/transcoded"):
@@ -119,8 +117,8 @@ def start_transcode(job):
     vid_ext = vid_path.suffix
     vid_fn = f"/srv/videos/segments/{job['user'].get_id()}_{job_details['input']['bucket']}_{vid_path.stem}"
   elif job_details['input']['type'] == "local":
-    fp = f"/srv/videos/inputs/{job['user'].get_id()}_{job['file_name']}"
-    vid_path = pathlib.Path(job['file_name'])
+    fp = f"/srv/videos/inputs/{job['user'].get_id()}_{job['local_file']}"
+    vid_path = pathlib.Path(job['local_file'])
     vid_ext = vid_path.suffix
     vid_fn = f"/srv/videos/segments/{job['user'].get_id()}_{vid_path.stem}"
     
