@@ -1,3 +1,5 @@
+import anvil.files
+from anvil.files import data_files
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files
 import anvil.tables as tables
@@ -7,6 +9,7 @@ import anvil.users, anvil.server, anvil.http
 from anvil.server import http_endpoint, request
 import json, boto3
 import ffmpeg, pathlib
+import anvil.media
 
 # This is a server module. It runs on the Anvil server,
 # rather than in the user's browser.
@@ -21,32 +24,51 @@ import ffmpeg, pathlib
 #   return 42
 #
 @anvil.server.callable
-@anvil.server.background_task
 def save_file_loaded(file):
-  user = anvil.users.get_user()
-  fn = "%s_%s" % (user.get_id(), file.name)
-  app_tables.jobs.add_row(file_name=file.name,user=user, file=file)
-  print("source file saved for %s %s" % (user.get_id(), file.name))
+  if not os.path.exists("/srv/videos/inputs"):
+    os.makedirs("/srv/videos/inputs", exist_ok=True)
   
+  user = anvil.users.get_user()
+  fp = f"/srv/videos/inputs/{user.get_id()}_{file.name}"
+  with open(fp, 'wb') as inp:
+    inp.write(file.get_bytes())
+  job = app_tables.jobs.add_row(file_name=file.name,user=user,uploaded=True)
+  print("source file saved for %s %s" % (user.get_id(), file.name))
 
 @anvil.server.callable
 def start_transcoding_job(file_name, profiles):
   user = anvil.users.get_user()
   job_details = {"input": { "type": "local",
-                            "filename": file_name,
+                            "filename": f"{user.get_id()}_{file_name}",
                           },
                  "storage": { "type": "local",
                             },
                  "profiles": profiles
-                }  
+                }
   
+  job = app_tables.jobs.get(user=user, file_name=file_name, uploaded=True)
+  if job != None:
+    start_transcode(job)
+    return "ok"
+  else:
+    return "file not available"
 
 @anvil.server.callable
-def get_file_info(file_name):
+def get_file_info(file_name, as_json=False):
   user = anvil.users.get_user()
-  job = app_tables.jobs.get(user=user, file_name=file_name)
+  job = app_tables.jobs.get(user=user, file_name=file_name, uploaded=True)
   if job != None:
-    pass
+    try:
+      fp = f"/srv/videos/inputs/{user.get_id()}_{file_name}"
+      probe = ffmpeg.probe(fp)
+      if as_json:
+        return probe
+      else:
+        return json.dumps(probe, indent=4)
+    except ffmpeg.Error as e:
+      return str(e.stderr)
+    except Exception as ee:
+      return "file not available"
     
 @anvil.server.http_endpoint('/transcode', authenticate_users=True)
 def transcode():
@@ -65,24 +87,34 @@ def start_transcode(job):
     os.makedirs("/srv/videos/segments", exist_ok=True)
   if not os.path.exists("/srv/videos/transcoded"):
     os.makedirs("/srv/videos/transcoded", exist_ok=True)
-  try:
-    s3 = boto3.client(service_name='s3', 
-                    aws_access_key_id=job_details["input"]["credentials"]["accessKeyId"], 
-                    aws_secret_access_key=job_details["input"]["credentials"]["secretAccessKey"])
-    fp = f"/srv/videos/inputs/{job['user'].get_id()}_{job_details['input']['bucket']}_{job_details['input']['path']}"
-    s3.download_file(job_details["input"]["bucket"], job_details["input"]["path"], fp)
-  except botocore.exceptions.ClientError as e:
-    job['error'] = e.response
-    if e.response['Error']['Code'] == "404":
-      print("The object does not exist.")
-    else:
-      print("error getting file")
-    return
 
+  vid_path = ""
+  vid_ext = ""
+  vid_fn = ""
+  if job_details['input']['type'] == "s3":
+    try:
+      s3 = boto3.client(service_name='s3', 
+                      aws_access_key_id=job_details["input"]["credentials"]["accessKeyId"], 
+                      aws_secret_access_key=job_details["input"]["credentials"]["secretAccessKey"])
+      fp = f"/srv/videos/inputs/{job['user'].get_id()}_{job_details['input']['bucket']}_{job_details['input']['path']}"
+      s3.download_file(job_details["input"]["bucket"], job_details["input"]["path"], fp)
+    except botocore.exceptions.ClientError as e:
+      job['error'] = e.response
+      if e.response['Error']['Code'] == "404":
+        print("The object does not exist.")
+      else:
+        print("error getting file")
+      return
+    vid_path = pathlib.Path(job_details['input']['path'])
+    vid_ext = vid_path.suffix
+    vid_fn = f"/srv/videos/segments/{job['user'].get_id()}_{job_details['input']['bucket']}_{vid_path.stem}"
+  elif job_details['input']['type'] == "local":
+    fp = f"/srv/videos/inputs/{job['user'].get_id()}_{job['file_name']}"
+    vid_path = pathlib.Path(job['file_name'])
+    vid_ext = vid_path.suffix
+    vid_fn = f"/srv/videos/segments/{job['user'].get_id()}_{vid_path.stem}"
+    
   #start watcher that will submit segments for transcoding
-  vid_path = pathlib.Path(job_details['input']['path'])
-  vid_ext = vid_path.suffix
-  vid_fn = f"/srv/videos/segments/{job['user'].get_id()}_{job_details['input']['bucket']}_{vid_path.stem}"
   start_transcode_requests_watcher(job, vid_fn, vid_ext)
   #segment the video
   ffmpeg.input(fp).output(f"{vid_fn}_%d{vid_ext}", f='segment', segment_time='10').run()
@@ -91,26 +123,33 @@ def start_transcode(job):
 def start_transcode_requests_watcher(job, vid_fn, vid_ext):
   #give segmenter some time to start up
   time.sleep(10)
+  #monitor for files and exit after no file available for 15 seconds
   transcodes_in_process = []
   seg_num = 0
-  while True:
+  no_file_available_cnt = 0
+  while no_file_available_cnt <= 15:
     if len(transcodes_in_process) <= 5:
       seg = f"{vid_fn}_{seg_num}{vid_ext}"
       if os.path.exists(seg):
+        no_file_available_cnt = 0
         t_proc = send_transcode_request(job, seg, 1)
         transcodes_in_process.append(t_proc)
         seg_num += 1 #move to next segment
       else:
-        time.sleep(1) #let segmenter catch up
+        no_file_available_cnt += 1
+        time.sleep(1) #let segmenter catch up, exits at 15 seconds
     else:
       for t in range(0,5):
         t_status = transcodes_in_process[t].get_termination_status()
+        t_error = transcodes_in_process[t].task_state['error']
         if t_status != None:
           if t_status == "completed":
             transcodes_in_process.pop(t)
           else:
-            if t_status == "failed":
-              transcodes_in_process[t] = send_transcode_request(transcodes_in_process[t].task_state['job'], transcodes_in_process[t].task_state['segment'], transcodes_in_process[t].task_state['attempt'])
+            if t_error != '':
+              transcodes_in_process[t] = send_transcode_request(transcodes_in_process[t].task_state['job'], transcodes_in_process[t].task_state['segment'], transcodes_in_process[t].task_state['attempt'] + 1)
+      #short pause to allow processing
+      time.sleep(1)
             
       
 @anvil.server.background_task
@@ -124,11 +163,11 @@ def send_transcode_request(job, segment, attempt):
   
   #get segment information
   try:
-    probe = ffmpeg.probe(segment)
+    probe = get_file_info(segment, as_json=True)
     video_stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
     width = video_stream['width']
     height = video_stream['height']
-    duration = round(probe['format']['duration']*1000,0)
+    duration = round(probe['format']['duration']*1000, 0)
   except ffmpeg.Error as e:
     print("Error: Could not get file information "+e.stderr)
     anvil.server.task_state['error'] = "could not get segment information"
@@ -137,12 +176,18 @@ def send_transcode_request(job, segment, attempt):
     
   with open(segment, 'rb') as segment_file:
     data = segment_file.read()
-    seg_name = segment.split("/")[-1]      
+    name_parts = pathlib.Path(segment)
     try:
+      transcode_settings = {"manifestID": name_parts.stem,
+                            "profiles": job_details['profiles'],
+                            "timeoutMultiplier": 4
+                           }
       headers = {'Accept':'multipart/mixed','Content-Duration':str(duration),'Content-Resolution':str(width)+"x"+str(height)}
-      resp = anvil.http.request("http://127.0.0.1:3935/live/"+seg_name, 
+      resp = anvil.http.request("http://127.0.0.1:3935/live/"+name_parts.name, 
                                method="POST",
-                               headers = {'Accept':'multipart/mixed','Content-Duration':'10000','Content-Resolution':'1920x1080'},
+                               headers = {'Accept':'multipart/mixed','Content-Duration':'10000',
+                                          'Content-Resolution':'1920x1080',
+                                          'Livepeer-Transcode-Configuration': transcode_settings},
                                data=data,
                                timeout=60)
       #save the transcoded renditions
@@ -155,7 +200,8 @@ def send_transcode_request(job, segment, attempt):
           rendition = part.headers[b'rendition-name']
           transcoded_file_name = transcoded_segment_folder+"/"+rendition+"/"+filename
           #make directories for transcoded segments
-          os.makedirs(os.path.dirname(CLIP_RESULTS_PATH.format(eth_address=eth_address, region=WORKER_REGION, results_file='0.ts')), exist_ok=True)
+          if not os.path.exists(transcoded_segment_folder+"/"+rendition):
+            os.makedirs(os.path.dirname(transcoded_segment_folder+"/"+rendition), exist_ok=True)
           #get the binary data of the rendition
           rendition = part.content #actual transcoded stream
           with open(transcoded_file_name,'wb') as t:

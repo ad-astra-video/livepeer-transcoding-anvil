@@ -20,8 +20,7 @@ class NewJob(NewJobTemplate):
   def load_file_change(self, file, **event_args):
     """This method is called when a new file is loaded into this FileLoader"""
     self.file_name.text = "uploading..."
-    upload_task = anvil.server.call_s('save_file_loaded', file)
-    
+    anvil.server.call_s('save_file_loaded', file)    
 
   def start_transcoding_click(self, **event_args):
     """This method is called when the button is clicked"""

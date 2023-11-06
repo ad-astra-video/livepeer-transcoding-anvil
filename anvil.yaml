@@ -65,6 +65,12 @@ db_schema:
     - name: req_url
       admin_ui: {width: 200, order: 11}
       type: string
+    - name: uploaded
+      admin_ui: {width: 200, order: 12}
+      type: bool
+    - name: local_file
+      admin_ui: {order: 6.5, width: 200}
+      type: media
     title: Jobs
   settings:
     client: none
@@ -81,6 +87,20 @@ db_schema:
       admin_ui: {width: 200, order: 2}
       type: string
     title: Settings
+  files:
+    client: none
+    server: full
+    columns:
+    - name: path
+      admin_ui: {order: 0, width: 200}
+      type: string
+    - name: file
+      admin_ui: {order: 1, width: 200}
+      type: media
+    - name: file_version
+      admin_ui: {order: 2, width: 200}
+      type: string
+    title: Files
 startup: {type: form, module: Main}
 name: Livepeer Transcoding
 startup_form: null
@@ -97,3 +117,6 @@ services:
 - source: /runtime/services/google.yml
   client_config: {}
   server_config: {}
+- source: /runtime/services/anvil/files.yml
+  client_config: {}
+  server_config: {file_table: files}
