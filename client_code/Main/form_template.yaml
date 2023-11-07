@@ -41,11 +41,7 @@ components:
     type: Button
     layout_properties: {grid_position: 'KPGSDT,FFRDVJ'}
 - name: content_panel
-  properties: {}
+  properties: {col_widths: '{"QJLPNH":45}'}
   type: ColumnPanel
   layout_properties: {slot: default}
-  components:
-  - name: uploader
-    properties: {role: card}
-    type: ColumnPanel
-    layout_properties: {grid_position: 'YBNWGF,HOUPLI'}
+  components: []

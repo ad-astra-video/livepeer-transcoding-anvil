@@ -22,7 +22,22 @@ import os, boto3
 #   print("Hello, " + name + "!")
 #   return 42
 #
-
+@anvil.server.callable(require_user=True)
+def get_upload_file_url(filename, content_type):
+  s3_client = boto3.client(
+      's3',
+      aws_access_key_id=anvil.secrets.get_secret('s3_key_id'),
+      aws_secret_access_key=anvil.secrets.get_secret('s3_secret_key'),
+      region_name="dc1"
+  )
+  r = s3_client.generate_presigned_post("inputs", filename)
+  # Return the data in the format Uppy needs 
+  return {
+    'url': r['url'],
+    'fields': r['fields'],
+    'method': 'POST'
+  }
+  
 @anvil.server.http_endpoint("/upload", authenticate_users=True, methods=['POST'])
 def upload_chunk(**params):
   pass

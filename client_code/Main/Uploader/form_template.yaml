@@ -1,0 +1,7 @@
+container: {type: ColumnPanel}
+components:
+- name: uppy_container
+  properties: {}
+  type: ColumnPanel
+  layout_properties: {grid_position: 'AFSPIS,EUPTEL'}
+is_package: true
