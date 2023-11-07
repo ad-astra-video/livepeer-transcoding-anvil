@@ -8,7 +8,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
-with os
+import os, boto3
 
 # This is a server module. It runs on the Anvil server,
 # rather than in the user's browser.
