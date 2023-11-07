@@ -10,8 +10,6 @@ from anvil.tables import app_tables
 from ..JobProfiles import JobProfiles
 from ..Uploader import Uploader
 import anvil.media
-from anvil.js import window, import_from, get_dom_node
-import anvil.js
 
 class NewJob(NewJobTemplate):
   def __init__(self, **properties):
@@ -43,9 +41,6 @@ class NewJob(NewJobTemplate):
       anvil.server.call('start_transcoding_job', fn, profiles)
     else:
       alert("transcoding did not start, no file selected")
-      
-  def start_s3_upload(self, file):
-    params = anvil.server.call('get_upload_file_url') 
 
   def upload_files_click(self, **event_args):
     """This method is called when the button is clicked"""
