@@ -29,7 +29,7 @@ def get_upload_file_url(filename, content_type):
       aws_access_key_id=anvil.secrets.get_secret('s3_key_id'),
       aws_secret_access_key=anvil.secrets.get_secret('s3_secret_key'),
       region_name="dc1",
-      endpoint_url="https://inputs.transcoding.s3.ad-astra.video",
+      endpoint_url="https://inputs.transcoding.s3.ad-astra.video:3900",
   )
   r = s3_client.generate_presigned_post("inputs", filename)
   # Return the data in the format Uppy needs 
