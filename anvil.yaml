@@ -17,6 +17,9 @@ services:
 - source: /runtime/services/anvil/files.yml
   client_config: {}
   server_config: {file_table: files}
+- source: /runtime/services/anvil/secrets.yml
+  client_config: {}
+  server_config: {}
 startup: {type: form, module: Main}
 package_name: Livepeer_Transcoding
 allow_embedding: false
@@ -143,3 +146,10 @@ db_schema:
       admin_ui: {width: 200, order: 4}
       type: media
     title: Media
+secrets:
+  s3_key_id:
+    value: {62N7CFMDEZISZZQF: IA88gRIozkBMCH+hNfjtSLCIJXyX9QzB5WH1JwAMUZuC6UFxaMnPsPRLn963exL6iaZJCimeBIuW0QdrxiKLz4zRdX4jNBcNHVrwImy2N26BWnHku4EE4NZNdpVh39JQN10wdAjyuo4a05V4d6VPAQJc0EjgwcETYg==}
+    type: secret
+  s3_key_secret:
+    value: {62N7CFMDEZISZZQF: /MorvGcrxlNP9yReQIZhky+v2Q2vZQfIz0O7pGskcleWtGH377It0LbMyC7z8SlEo2mb0tuQhBUI8OXJ7XH3heenY92u5LCD5l/DpHyypavVZzU2V9AKFC6Y/XbNVf+bsBq6k4L5rm5RXf9shSABRqM5hXvOYA4oI2DCIx5ZmxlYfWtdywLvPErup6P72HuUIWezXBWZBzqW9gG7kpCC}
+    type: secret
