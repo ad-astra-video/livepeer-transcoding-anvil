@@ -27,7 +27,7 @@ def get_upload_file_url(filename, content_type):
   s3_client = boto3.client(
       's3',
       aws_access_key_id=anvil.secrets.get_secret('s3_key_id'),
-      aws_secret_access_key=anvil.secrets.get_secret('s3_secret_key'),
+      aws_secret_access_key=anvil.secrets.get_secret('s3_key_secret'),
       region_name="dc1",
       endpoint_url="https://inputs.transcoding.s3.ad-astra.video:3900",
   )
