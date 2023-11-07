@@ -10,7 +10,6 @@ from anvil.tables import app_tables
 from ..JobProfiles import JobProfiles
 from ..Uploader import Uploader
 import anvil.media
-import boto3, string
 from anvil.js import window, import_from, get_dom_node
 import anvil.js
 
