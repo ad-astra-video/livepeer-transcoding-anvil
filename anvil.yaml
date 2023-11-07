@@ -1,7 +1,4 @@
-dependencies:
-- dep_id: dep_cex51kqgmsq7lo
-  version: {dev: false}
-  resolution_hints: {app_id: 25RFDFZZSJA6VQQ7, name: Clone of Progress Bar, package_name: ProgressBar}
+dependencies: []
 services:
 - source: /runtime/services/tables.yml
   client_config: {}
