@@ -41,26 +41,36 @@ def get_upload_file_url(filename, content_type):
   }
 
 @anvil.server.callable
+def upload_started(file_name):
+  user=anvil.users.get_user()
+  job = app_tables.jobs.get(user=user,local_file=file_name)
+  if job != None:
+    job['uploaded'] = False
+    
+@anvil.server.callable
+@anvil.server.background_task
 def upload_chunk(data, chunk, file_name, start, end):
   user = anvil.users.get_user()
   app_tables.fileuploads.add_row(user=user,data=data,chunk=chunk,file_name=file_name,start=start,end=end)
 
 @anvil.server.callable
-@anvil.tables.in_transaction
+@anvil.server.background_task
 def upload_chunk_finished(file_name, size):
   user = anvil.users.get_user()
   file = bytearray()
   chunks = app_tables.fileuploads.search(user=user,file_name=file_name)
+  c_t = chunks[0]['data'].content_type
   for chunk in chunks:
     file.extend(chunk['data'].get_bytes())
     chunk.delete() #delete file part
   #save the combined file
   job = app_tables.jobs.get(user=user,local_file=file_name)
   if job == None:
-    app_tables.jobs.add_row(user=user, local_file=file_name, local_media=anvil.BlobMedia(chunk['data'].content_type, bytes(file)))
+    app_tables.jobs.add_row(user=user, local_file=file_name, local_media=anvil.BlobMedia(c_t, bytes(file)),uploaded=True)
     print("file combined and added to db")
   else:
-    job['local_media'] = anvil.BlobMedia(chunk['data'].content_type, bytes(file))
+    job.update(local_media=anvil.BlobMedia(c_t, bytes(file)),uploaded=True)
+    
     print("file combined and updated in db")
   #with anvil.media.TempFile(chunks[0]['data']) as tmp_file:
   #  with open(tmp_file, "wb") as c_file:
@@ -75,7 +85,6 @@ def upload_chunk_finished(file_name, size):
 
 @anvil.server.http_endpoint("/upload", authenticate_users=True, methods=['POST'])
 def upload_chunk_api(**params):
-  request
   pass
 
 @anvil.server.background_task()

@@ -52,6 +52,9 @@ class NewJob(NewJobTemplate):
 
   def file_loader_change(self, file, **event_args):
     """This method is called when a new file is loaded into this FileLoader"""
+    #signal upload started
+    anvil.server.call('upload_started',file.name)
+    #upload the chunks
     fb = file.get_bytes()
     size = len(fb)
     st = 0
@@ -59,12 +62,12 @@ class NewJob(NewJobTemplate):
     chunk_cnt = 1
     while en < size:
       st = en
-      en = min(en+1024*1024*3, size)
+      en = min(en+1024*1024*2, size)
       data = anvil.BlobMedia(file.content_type, fb[st:en], name=file.name)
       self.upload_file_chunk(data, chunk_cnt,file.name,st,en)
       self.upload_progress.text = f"{en/size:.0%}"
       chunk_cnt += 1
-      
+    #signal the chunks are all uploaded and server can combine them
     print(f"upload finished chunks: {chunk_cnt} end: {en} size: {size}")
     anvil.server.call_s('upload_chunk_finished',file.name, size)
   

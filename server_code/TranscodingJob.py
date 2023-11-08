@@ -67,7 +67,8 @@ def get_loaded_files():
 def start_transcoding_job(file_name, profiles):
   user = anvil.users.get_user()
   job_details = {"input": { "type": "local",
-                            "filename": f"{user.get_id()}_{file_name}",
+                            "user_id": user.get_id(),
+                            "filename": file_name,
                           },
                  "storage": { "type": "local",
                             },
