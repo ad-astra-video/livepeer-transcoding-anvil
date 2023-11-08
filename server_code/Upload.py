@@ -40,23 +40,29 @@ def get_upload_file_url(filename, content_type):
     'method': 'POST'
   }
 
-@anvil.server.callable
+@anvil.server.callable(require_user=True)
 def upload_started(file_name):
   user=anvil.users.get_user()
   job = app_tables.jobs.get(user=user,local_file=file_name)
   if job != None:
     job['uploaded'] = False
     
-@anvil.server.callable
-@anvil.server.background_task
+@anvil.server.callable(require_user=True)
 def upload_chunk(data, chunk, file_name, start, end):
   user = anvil.users.get_user()
-  app_tables.fileuploads.add_row(user=user,data=data,chunk=chunk,file_name=file_name,start=start,end=end)
-
-@anvil.server.callable
-@anvil.server.background_task
+  anvil.server.launch_background_task('save_chunk', user, data, chunk,file_name,start,end)
+  
+@anvil.server.callable(require_user=True)
 def upload_chunk_finished(file_name, size):
   user = anvil.users.get_user()
+  anvil.server.launch_background_task('combine_chunks',user,file_name,size)
+
+@anvil.server.background_task
+def save_chunk(user, data, chunk, file_name, start, end):
+  app_tables.fileuploads.add_row(user=user,data=data,chunk=chunk,file_name=file_name,start=start,end=end)
+  
+@anvil.server.background_task
+def combine_chunks(user, file_name, size):
   file = bytearray()
   chunks = app_tables.fileuploads.search(user=user,file_name=file_name)
   c_t = chunks[0]['data'].content_type
