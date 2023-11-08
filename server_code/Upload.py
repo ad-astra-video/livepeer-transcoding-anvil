@@ -9,6 +9,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
 import os, boto3
+import anvil.media
 
 # This is a server module. It runs on the Anvil server,
 # rather than in the user's browser.
@@ -38,9 +39,43 @@ def get_upload_file_url(filename, content_type):
     'fields': r['fields'],
     'method': 'POST'
   }
-  
+
+@anvil.server.callable
+def upload_chunk(data, chunk, file_name, start, end):
+  user = anvil.users.get_user()
+  app_tables.fileuploads.add_row(user=user,data=data,chunk=chunk,file_name=file_name,start=start,end=end)
+
+@anvil.server.callable
+@anvil.tables.in_transaction
+def upload_chunk_finished(file_name, size):
+  user = anvil.users.get_user()
+  file = bytearray()
+  chunks = app_tables.fileuploads.search(user=user,file_name=file_name)
+  for chunk in chunks:
+    file.extend(chunk['data'].get_bytes())
+    chunk.delete() #delete file part
+  #save the combined file
+  job = app_tables.jobs.get(user=user,local_file=file_name)
+  if job == None:
+    app_tables.jobs.add_row(user=user, local_file=file_name, local_media=anvil.BlobMedia(chunk['data'].content_type, bytes(file)))
+    print("file combined and added to db")
+  else:
+    job['local_media'] = anvil.BlobMedia(chunk['data'].content_type, bytes(file))
+    print("file combined and updated in db")
+  #with anvil.media.TempFile(chunks[0]['data']) as tmp_file:
+  #  with open(tmp_file, "wb") as c_file:
+  #    for c in range(1, len(chunks)):
+  #      c_file.write(chunks[c]['data'].get_bytes())
+  #    #add joined file to db
+  #    job = app_tables.jobs.get(user=user,local_file=file_name)
+  #    if job == None:
+  #      app_tables.jobs.add_row(user=user, local_file=file_name, local_media=anvil.media.from_file(tmp_file))
+  #    else:
+  #      job['local_media'] = anvil.media.from_file(tmp_file)
+
 @anvil.server.http_endpoint("/upload", authenticate_users=True, methods=['POST'])
-def upload_chunk(**params):
+def upload_chunk_api(**params):
+  request
   pass
 
 @anvil.server.background_task()

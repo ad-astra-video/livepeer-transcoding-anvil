@@ -93,6 +93,9 @@ db_schema:
     - name: local_file
       admin_ui: {order: 5.5, width: 200}
       type: string
+    - name: local_media
+      admin_ui: {order: 5.75, width: 200}
+      type: media
     title: Jobs
   settings:
     client: none
@@ -144,6 +147,30 @@ db_schema:
       admin_ui: {width: 200, order: 4}
       type: media
     title: Media
+  fileuploads:
+    client: none
+    server: full
+    columns:
+    - name: user
+      admin_ui: {width: 200, order: 0}
+      type: link_single
+      target: users
+    - name: chunk
+      admin_ui: {width: 200, order: 1}
+      type: number
+    - name: data
+      admin_ui: {width: 200, order: 2}
+      type: media
+    - name: file_name
+      admin_ui: {width: 200, order: 3}
+      type: string
+    - name: start
+      admin_ui: {width: 200, order: 4}
+      type: number
+    - name: end
+      admin_ui: {width: 200, order: 5}
+      type: number
+    title: FileUploads
 secrets:
   s3_key_id:
     value: {62N7CFMDEZISZZQF: IA88gRIozkBMCH+hNfjtSLCIJXyX9QzB5WH1JwAMUZuC6UFxaMnPsPRLn963exL6iaZJCimeBIuW0QdrxiKLz4zRdX4jNBcNHVrwImy2N26BWnHku4EE4NZNdpVh39JQN10wdAjyuo4a05V4d6VPAQJc0EjgwcETYg==}
