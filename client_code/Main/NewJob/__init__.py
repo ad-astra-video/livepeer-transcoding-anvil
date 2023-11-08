@@ -64,15 +64,15 @@ class NewJob(NewJobTemplate):
     en = 0
     chunk_cnt = 1
     while en < size:
-      if self.uploads_in_process < 5:
+      if self.uploads_in_process < 10:
         print(f"uploading chunk {chunk_cnt}")
         st = en
-        en = min(en+1024*1024*2, size)
+        en = min(en+1024*1024*1, size)
         self.upload_file_chunk(anvil.BlobMedia(file.content_type, fb[st:en], name=file.name), chunk_cnt, file.name, st, en)
         self.upload_progress.text = f"{en/size:.0%}"
         chunk_cnt += 1
         self.uploads_in_process += 1
-        time.sleep(1)
+        time.sleep(.5)
       else:
         time.sleep(2)
     #signal the chunks are all uploaded and server can combine them
