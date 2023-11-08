@@ -1,7 +1,7 @@
 container: {type: ColumnPanel}
 components:
 - name: content_panel_copy_1
-  properties: {col_widths: '{"OYGCYD":12,"EFDAUX":39,"QHYSHF":7,"MQPFYI":53,"QWTSVA":9}',
+  properties: {col_widths: '{"OYGCYD":14,"EFDAUX":46,"QHYSHF":7,"MQPFYI":53,"WAAZPK":11}',
     col_spacing: small}
   type: ColumnPanel
   layout_properties: {grid_position: '', full_width_row: false}
@@ -12,11 +12,12 @@ components:
     type: Button
     layout_properties: {grid_position: 'GJRWRA,OYGCYD'}
     event_bindings: {click: start_transcoding_click}
-  - name: upload_files
-    properties: {text: upload files}
-    type: Button
-    layout_properties: {grid_position: 'GJRWRA,QWTSVA'}
-    event_bindings: {click: upload_files_click}
+  - name: file_loader
+    properties: {show_state: true}
+    type: FileLoader
+    layout_properties: {grid_position: 'GJRWRA,WAAZPK'}
+    data_bindings: []
+    event_bindings: {change: file_loader_change}
   - name: upload_progress
     properties: {}
     type: Label

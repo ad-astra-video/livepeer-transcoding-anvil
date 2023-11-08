@@ -49,6 +49,11 @@ class NewJob(NewJobTemplate):
       title="Update Files",
       large=True
     )
+
+  def file_loader_change(self, file, **event_args):
+    """This method is called when a new file is loaded into this FileLoader"""
+    fb = file.get_bytes()
+    
     
   
 
