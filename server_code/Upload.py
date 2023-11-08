@@ -48,14 +48,15 @@ def upload_started(file_name):
     job['uploaded'] = False
     
 @anvil.server.callable(require_user=True)
-def upload_chunk(data, chunk, file_name, start, end):
+def upload_chunk(data, chunk_num, file_name, start, end):
   user = anvil.users.get_user()
-  anvil.server.launch_background_task('save_chunk', user, data, chunk,file_name,start,end)
+  save_chunk(user, data, chunk_num, file_name, start, end)
+  return chunk_num
   
 @anvil.server.callable(require_user=True)
 def upload_chunk_finished(file_name, size):
   user = anvil.users.get_user()
-  anvil.server.launch_background_task('combine_chunks',user,file_name,size)
+  combine_chunks(user, file_name, size)
 
 @anvil.server.background_task
 def save_chunk(user, data, chunk, file_name, start, end):

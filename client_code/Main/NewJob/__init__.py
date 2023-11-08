@@ -11,6 +11,7 @@ from ..JobProfiles import JobProfiles
 from ..Uploader import Uploader
 import anvil.media
 from anvil_extras.non_blocking import call_async
+import time
 
 class NewJob(NewJobTemplate):
   def __init__(self, **properties):
@@ -23,6 +24,7 @@ class NewJob(NewJobTemplate):
       self.transcoding_profiles.update_profiles(user_settings['profiles'])
     #get user files
     self.file_names.items = anvil.server.call('get_loaded_files')
+    self.uploads_in_process = 0
     
   def load_file_change(self, file, **event_args):
     """This method is called when a new file is loaded into this FileLoader"""
@@ -62,19 +64,30 @@ class NewJob(NewJobTemplate):
     en = 0
     chunk_cnt = 1
     while en < size:
-      print(f"uploading chunk {chunk_cnt}")
-      st = en
-      en = min(en+1024*1024*1, size)
-      self.upload_file_chunk(anvil.BlobMedia(file.content_type, fb[st:en], name=file.name), chunk_cnt, file.name, st, en)
-      self.upload_progress.text = f"{en/size:.0%}"
-      chunk_cnt += 1
+      if self.uploads_in_process < 5:
+        print(f"uploading chunk {chunk_cnt}")
+        st = en
+        en = min(en+1024*1024*2, size)
+        self.upload_file_chunk(anvil.BlobMedia(file.content_type, fb[st:en], name=file.name), chunk_cnt, file.name, st, en)
+        self.upload_progress.text = f"{en/size:.0%}"
+        chunk_cnt += 1
+        self.uploads_in_process += 1
+        time.sleep(1)
+      else:
+        time.sleep(2)
     #signal the chunks are all uploaded and server can combine them
     print(f"upload finished chunks: {chunk_cnt} end: {en} size: {size}")
     anvil.server.call_s('upload_chunk_finished', file.name, size)
-  
-  @multitasking.task
+
+  def chunk_upload_complete(self, res):
+    print(f"chunk {res} upload complete")
+    self.uploads_in_process -= 1 #let other chunks upload
+  def chunk_upload_failed(self, res):
+    print(f"chunk {res} upload failed")  #TODO: can we do a retry?
+    self.uploads_in_process -= 1 #let other chunks upload
   def upload_file_chunk(self, data, chunk, file_name, start, end):
-    anvil.server.call_s('upload_chunk', data, chunk, file_name, start, end)
+    call_async('upload_chunk', data, chunk, file_name, start, end).on_result(self.chunk_upload_complete, self.chunk_upload_failed)
+    
   
 
   
