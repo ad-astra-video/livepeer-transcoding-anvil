@@ -1,6 +1,6 @@
 dependencies:
 - dep_id: dep_jbv5e26l3bgda
-  version: {dev: false}
+  version: {version_tag: v2.5.3}
   resolution_hints: {app_id: C6ZZPAPN4YYF5NVJ, name: Anvil Extras, package_name: anvil_extras}
 services:
 - source: /runtime/services/tables.yml
