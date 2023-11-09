@@ -54,7 +54,7 @@ def upload_chunk(data, chunk_num, file_name, start, end):
   return chunk_num
   
 @anvil.server.callable(require_user=True)
-def upload_chunk_finished(file_name, size):
+def upload_chunks_finished(file_name, size):
   user = anvil.users.get_user()
   combine_chunks(user, file_name, size)
 
@@ -94,6 +94,3 @@ def combine_chunks(user, file_name, size):
 def upload_chunk_api(**params):
   pass
 
-@anvil.server.background_task()
-def combine_chunks(user, file):
-  pass
