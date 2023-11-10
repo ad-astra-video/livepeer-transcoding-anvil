@@ -51,7 +51,7 @@ def upload_started(file_name):
 def upload_chunk(data, chunk_num, file_name, start, end):
   user = anvil.users.get_user()
   save_chunk(user, data, chunk_num, file_name, start, end)
-  return chunk_num
+  return {"file_name":file_name,"chunk":chunk_num}
   
 @anvil.server.callable(require_user=True)
 def upload_chunks_finished(file_name, size):
@@ -62,23 +62,31 @@ def upload_chunks_finished(file_name, size):
 def save_chunk(user, data, chunk, file_name, start, end):
   app_tables.fileuploads.add_row(user=user,data=data,chunk=chunk,file_name=file_name,start=start,end=end)
   
+
 @anvil.server.background_task
 def combine_chunks(user, file_name, size):
-  file = bytearray()
+  #file = bytearray()
+  fn = f'{user}_{file_name}'
   chunks = app_tables.fileuploads.search(user=user,file_name=file_name)
   c_t = chunks[0]['data'].content_type
-  for chunk in chunks:
-    file.extend(chunk['data'].get_bytes())
-    chunk.delete() #delete file part
+  with anvil.tables.Transaction(relaxed=True) as txn:
+    with data_files.editing(fn) as path:
+      with open(path, "w+") as f:
+        for chunk in chunks:
+          #file.extend(chunk['data'].get_bytes())
+          f.write(chunk['data'].get_bytes())
+          chunk.delete() #delete file part
   #save the combined file
   job = app_tables.jobs.get(user=user,local_file=file_name)
   if job == None:
-    app_tables.jobs.add_row(user=user, local_file=file_name, local_media=anvil.BlobMedia(c_t, bytes(file)),uploaded=True)
+    #app_tables.jobs.add_row(user=user, local_file=file_name, local_media=anvil.BlobMedia(c_t, bytes(file)),uploaded=True)
+    app_tables.jobs.add_row(user=user, local_file=fn, local_media=None,uploaded=True)
     print("file combined and added to db")
   else:
-    job.update(local_media=anvil.BlobMedia(c_t, bytes(file)),uploaded=True)
-    
+    #job.update(local_media=anvil.BlobMedia(c_t, bytes(file)),uploaded=True)
+    job.update(local_media=None, uploaded=True)
     print("file combined and updated in db")
+    
   #with anvil.media.TempFile(chunks[0]['data']) as tmp_file:
   #  with open(tmp_file, "wb") as c_file:
   #    for c in range(1, len(chunks)):

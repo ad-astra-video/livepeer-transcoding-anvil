@@ -62,7 +62,7 @@ class NewJob(NewJobTemplate):
   def file_loader_change(self, file, **event_args):
     """This method is called when a new file is loaded into this FileLoader"""
     #signal upload started
-    start_upload(file)
+    self.start_upload(file)
     
     #upload the chunks
     fb = file.get_bytes()
@@ -71,40 +71,38 @@ class NewJob(NewJobTemplate):
     chunk_cnt = 1
     while end < size:
       if self.uploads_in_process < self.max_uploads:
-        print(f"uploading chunk {chunk_cnt}")
+        print(f"uploading chunk {chunk_cnt}  in process: {self.uploads_in_process}")
         chunk = self.get_chunk(file.name, chunk_cnt)
         end = chunk["end"]
-        self.upload_file_chunk(chunk['data'], chunk_cnt, file.name, chunk['start'], chunk['end'], chunk['size'])
+        self.upload_file_chunk(chunk, chunk_cnt, file.name)
         chunk_cnt += 1
         time.sleep(.5)
       else:
         time.sleep(2)
 
   def chunk_upload_complete(self, res):
-    print(f"chunk {res} upload complete")
+    print(f"chunk {res['chunk']} upload complete")
     self.uploads_in_process -= 1 #let other chunks upload
     #dynamically adjust max uploads based on upload time
-    took = time.time() - self.uploads_start[res]
+    took = time.time() - self.uploads_start[res["chunk"]]
     if took < 15:
       self.max_uploads += 2
     else:
       self.max_uploads = min(1, self.max_uploads-4)
     
     if self.uploads_in_process == 0:
-      anvil.server.call_s('upload_chunks_finished', file_name, size)
+      anvil.server.call_s('upload_chunks_finished', res['file_name'], 0)
       
   def chunk_upload_failed(self, res):
     print(f"chunk {res} upload failed")  #TODO: can we do a retry?
-    self.uploads_in_process -= 1 #let other chunks upload
+
+  #build out retry
     
-    fb = file.get_bytes()
-    size = len(fb)
-    
-  def upload_file_chunk(self, data, chunk, file_name, start, end, size):
-    self.uploads_start[chunk_cnt] = time.time()
-    call_async('upload_chunk', data, chunk, file_name, start, end).on_result(self.chunk_upload_complete, self.chunk_upload_failed)
+  def upload_file_chunk(self, chunk, num, file_name):
+    self.uploads_start[num] = time.time()
+    call_async('upload_chunk', chunk['data'], num, file_name, chunk['start'], chunk['end']).on_result(self.chunk_upload_complete, self.chunk_upload_failed)
     self.uploads_in_process += 1
-    self.upload_progress.text = f"{en/size:.0%}"
+    self.upload_progress.text = f"{chunk['end']/chunk['file_size']:.0%}"
 
   def start_upload(self, file):
     anvil.server.call('upload_started',file.name)
@@ -120,7 +118,7 @@ class NewJob(NewJobTemplate):
       size = len(fb)
       st = (chunk_num-1)*1024*1024*1
       en = min(chunk_num*1024*1024*1, size)
-      return {"data":anvil.BlobMedia(file.content_type, fb[st:en], name=file.name), "start":st, "end":en,"size":size}
+      return {"data":anvil.BlobMedia(file.content_type, fb[st:en], name=file.name), "start":st, "end":en,"file_size":size}
       
   
 
