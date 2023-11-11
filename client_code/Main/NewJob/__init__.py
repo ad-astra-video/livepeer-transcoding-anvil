@@ -71,7 +71,7 @@ class NewJob(NewJobTemplate):
     #dynamically adjust max uploads based on upload time
     took = time.time() - self.uploads_start[res["chunk"]]
     if took < 15:
-      self.max_uploads += 2
+      self.max_uploads += 1
     else:
       self.max_uploads = min(1, self.max_uploads-4)
     

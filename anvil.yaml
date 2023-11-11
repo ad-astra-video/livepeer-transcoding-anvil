@@ -27,7 +27,9 @@ name: Livepeer Transcoding
 runtime_options: {version: 2, client_version: '3', server_version: python3-full, server_spec: null}
 startup_form: null
 native_deps: {head_html: '<link href="https://releases.transloadit.com/uppy/v3.18.1/uppy.min.css"
-    rel="stylesheet">'}
+    rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"></script>'}
 db_schema:
   users:
     client: none

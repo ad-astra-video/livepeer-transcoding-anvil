@@ -48,10 +48,10 @@ def upload_started(file_name):
     job['uploaded'] = False
     
 @anvil.server.callable(require_user=True)
-def upload_chunk(data, chunk_num, file_name, start, end):
+def upload_chunk(data, chunk, file_name, start, end):
   user = anvil.users.get_user()
   app_tables.fileuploads.add_row(user=user,data=data,chunk=chunk,file_name=file_name,start=start,end=end,uploaded_at=datetime.now())
-  return {"file_name":file_name,"chunk":chunk_num}
+  return {"file_name":file_name,"chunk":chunk}
   
 @anvil.server.callable(require_user=True)
 def upload_chunks_finished(file_name, size):
@@ -61,12 +61,12 @@ def upload_chunks_finished(file_name, size):
 @anvil.server.background_task
 def combine_chunks(user, file_name, size):
   #file = bytearray()
-  fn = f'{user}_{file_name}'
+  fn = f'{user.get_id()}_{file_name}'
   chunks = app_tables.fileuploads.search(user=user,file_name=file_name)
   c_t = chunks[0]['data'].content_type
   with anvil.tables.Transaction(relaxed=True) as txn:
     with data_files.editing(fn) as path:
-      with open(path, "w+") as f:
+      with open(path, "wb") as f:
         for chunk in chunks:
           #file.extend(chunk['data'].get_bytes())
           f.write(chunk['data'].get_bytes())
