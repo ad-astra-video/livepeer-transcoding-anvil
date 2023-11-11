@@ -10,7 +10,7 @@ from anvil.tables import app_tables
 import anvil.server
 import os, boto3
 import anvil.media
-
+from datetime import datetime
 # This is a server module. It runs on the Anvil server,
 # rather than in the user's browser.
 #
@@ -50,18 +50,13 @@ def upload_started(file_name):
 @anvil.server.callable(require_user=True)
 def upload_chunk(data, chunk_num, file_name, start, end):
   user = anvil.users.get_user()
-  save_chunk(user, data, chunk_num, file_name, start, end)
+  app_tables.fileuploads.add_row(user=user,data=data,chunk=chunk,file_name=file_name,start=start,end=end,uploaded_at=datetime.now())
   return {"file_name":file_name,"chunk":chunk_num}
   
 @anvil.server.callable(require_user=True)
 def upload_chunks_finished(file_name, size):
   user = anvil.users.get_user()
   combine_chunks(user, file_name, size)
-
-@anvil.server.background_task
-def save_chunk(user, data, chunk, file_name, start, end):
-  app_tables.fileuploads.add_row(user=user,data=data,chunk=chunk,file_name=file_name,start=start,end=end)
-  
 
 @anvil.server.background_task
 def combine_chunks(user, file_name, size):

@@ -64,21 +64,6 @@ class NewJob(NewJobTemplate):
     #signal upload started
     self.start_upload(file)
     
-    #upload the chunks
-    fb = file.get_bytes()
-    size = len(fb)
-    end = 0
-    chunk_cnt = 1
-    while end < size:
-      if self.uploads_in_process < self.max_uploads:
-        print(f"uploading chunk {chunk_cnt}  in process: {self.uploads_in_process}")
-        chunk = self.get_chunk(file.name, chunk_cnt)
-        end = chunk["end"]
-        self.upload_file_chunk(chunk, chunk_cnt, file.name)
-        chunk_cnt += 1
-        time.sleep(.5)
-      else:
-        time.sleep(2)
 
   def chunk_upload_complete(self, res):
     print(f"chunk {res['chunk']} upload complete")
@@ -110,6 +95,21 @@ class NewJob(NewJobTemplate):
     self.uploads_failed = 0
     self.uploads_start = {}
     self.current_uploads[file.name] = {"file":file, "bytes":file.get_bytes()}
+    #upload the chunks
+    fb = file.get_bytes()
+    size = len(fb)
+    end = 0
+    chunk_cnt = 1
+    while end < size:
+      if self.uploads_in_process < self.max_uploads:
+        print(f"uploading chunk {chunk_cnt}  in process: {self.uploads_in_process}")
+        chunk = self.get_chunk(file.name, chunk_cnt)
+        end = chunk["end"]
+        self.upload_file_chunk(chunk, chunk_cnt, file.name)
+        chunk_cnt += 1
+        time.sleep(.5)
+      else:
+        time.sleep(2)
 
   def get_chunk(self, file_name, chunk_num):
     if file_name in self.current_uploads:

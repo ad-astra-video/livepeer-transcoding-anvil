@@ -173,6 +173,9 @@ db_schema:
     - name: end
       admin_ui: {width: 200, order: 5}
       type: number
+    - name: uploaded_at
+      admin_ui: {width: 200, order: 6}
+      type: datetime
     title: FileUploads
 secrets:
   s3_key_id:
